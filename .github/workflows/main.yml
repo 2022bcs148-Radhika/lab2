@@ -1,28 +1,38 @@
 name: Lab 2 Automation
-[cite_start]on: [push, pull_request] # [cite: 52, 54, 56]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   ml-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - [cite_start]name: Set up Python # [cite: 57, 59]
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - [cite_start]name: Install dependencies # [cite: 61]
+
+      - name: Install dependencies
         run: pip install pandas scikit-learn joblib
-      - [cite_start]name: Train and Evaluate # [cite: 62]
+
+      - name: Train and Evaluate
         run: python src/train.py
-      - [cite_start]name: Write to Job Summary # [cite: 7, 23, 64]
+
+      - name: Write to Job Summary
         run: |
-          echo "## Experiment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Lab 2: Experiment Results" >> $GITHUB_STEP_SUMMARY
           echo "Student: Radhika | Roll: 2022bcs148" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| MSE | $(jq -r '.mse' outputs/results.json) |" >> $GITHUB_STEP_SUMMARY
           echo "| R2 Score | $(jq -r '.r2_score' outputs/results.json) |" >> $GITHUB_STEP_SUMMARY
-      - [cite_start]name: Upload Artifacts # [cite: 8, 66, 69]
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: model-results-radhika
